@@ -83,6 +83,7 @@
 #define STLINK_V3E_PID          (0x374E)
 #define STLINK_V3S_PID          (0x374F)
 #define STLINK_V3_2VCP_PID      (0x3753)
+#define STLINK_V3_PWR_PID       (0x3757)
 #define STLINK_V3E_NO_MSD_PID   (0x3754)
 
 /*
@@ -1298,7 +1299,7 @@ static int stlink_usb_version(void *handle)
 	}
 
 	/* STLINK-V3 requires a specific command */
-	if (v == 3 && x == 0 && y == 0) {
+	if ((v == 3 || v == 4) && x == 0 && y == 0) {
 		stlink_usb_init_buffer(handle, h->rx_ep, 16);
 
 		h->cmdbuf[h->cmdidx++] = STLINK_APIV3_GET_VERSION_EX;
@@ -1379,6 +1380,7 @@ static int stlink_usb_version(void *handle)
 
 		break;
 	case 3:
+	case 4: // V3PWR identifies as V4
 		/* all STLINK-V3 use api-v3 */
 		h->version.jtag_api = STLINK_JTAG_API_V3;
 
@@ -3402,6 +3404,7 @@ static int stlink_usb_usb_open(void *handle, struct hl_interface_param_s *param)
 			case STLINK_V3S_PID:
 			case STLINK_V3_2VCP_PID:
 			case STLINK_V3E_NO_MSD_PID:
+			case STLINK_V3_PWR_PID:
 				h->version.stlink = 3;
 				h->tx_ep = STLINK_V2_1_TX_EP;
 				h->trace_ep = STLINK_V2_1_TRACE_EP;
@@ -3419,6 +3422,7 @@ static int stlink_usb_usb_open(void *handle, struct hl_interface_param_s *param)
 				h->tx_ep = STLINK_TX_EP;
 				h->trace_ep = STLINK_TRACE_EP;
 				break;
+
 		}
 
 		/* get the device version */
