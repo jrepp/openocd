@@ -1382,7 +1382,6 @@ static int stlink_usb_version(void *handle)
 
 		break;
 	case 3:
-	case 4: // V3PWR identifies as V4
 		/* all STLINK-V3 use api-v3 */
 		h->version.jtag_api = STLINK_JTAG_API_V3;
 
